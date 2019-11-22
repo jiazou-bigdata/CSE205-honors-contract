@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <chrono>
 #include <random>
+#include <fstream>
+#include <string>
 
 typedef std::unordered_map<int, float> batch;
 
@@ -18,28 +20,45 @@ float RandomFloat(float a, float b) {
 
 int main()
 {
+	long int numWeights = 0;
+	int numBatches = 0;
+
+	std::string line;
+	std::ifstream configFile ("config.txt");
+	int lineNum = 0;
+	if (configFile.is_open()) {
+		while (std::getline(configFile, line)) {
+			if (lineNum == 0) {
+				numWeights = std::stol(line.c_str());
+			}
+			else if (lineNum == 1) {
+				numBatches = std::atoi(line.c_str());
+			}
+			lineNum++;
+		}
+	}
 
 	std::vector<float> weights;
-	for (int i = 0; i < 1076400; i++) {
-		weights.push_back(RandomFloat(0.0, 256.0));
+	for (int i = 0; i < numWeights; i++) {
+		weights.push_back(RandomFloat(0.0, 255.0));
 	}
 
 	auto start = std::chrono::high_resolution_clock::now();
-	std::vector<batch> batches;
+	std::vector<batch> deltas;
 
-	for (int i = 0; i < 32; i++) {
-		batch batch_map;
-		for (int j = 0; j < 1076400; j++) {
-			batch_map[j] = weights.at(j);
+	for (int i = 0; i < numBatches; i++) {
+		batch delta;
+		for (int j = 0; j < numWeights; j++) {
+			delta[j] = weights.at(j);
 		}
-		batches.push_back(batch_map);
+		deltas.push_back(delta);
 	}
 
 
-	batch final_weights;
-	for (int i = 0; i < 32; i++) {
-		for (int j = 0; j < 1076400; j++) {
-			final_weights[i * 1076400 + j] = batches.at(i)[j];
+	batch final_batch;
+	for (int i = 0; i < numBatches; i++) {
+		for (int j = 0; j < numWeights; j++) {
+			final_batch[i * numWeights + j] = deltas.at(i)[j];
 		}
 	}
 
