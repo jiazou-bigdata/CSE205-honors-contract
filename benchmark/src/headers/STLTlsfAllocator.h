@@ -48,9 +48,9 @@ public:
     //copy constructor
     template <class U>
     STLTlsfAllocator(const STLTlsfAllocator<U>& other) {
-        this.my_tlsf = other.my_tlsf;
-	this.memPool = other.memPool;
-	this.memPoolSize = other.memPoolSize;
+        this->my_tlsf = other.my_tlsf;
+	this->memPool = other.memPool;
+	this->memPoolSize = other.memPoolSize;
     }
 
     

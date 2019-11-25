@@ -35,4 +35,7 @@ file(GLOB SOURCE "${PROJECT_SOURCE_DIR}/benchmark/src/source/*.cc")
 #to build the library
 add_library(powehi OBJECT ${SOURCE})
 
+#set the testAllocator build target
+set(SOURCE_FILES_TEST_ALLOCATOR ${PROJECT_SOURCE_DIR}/tests/TestAllocator.cc $<TARGET_OBJECTS:powehi>)
+add_executable(testAllocator ${SOURCE_FILES_TEST_ALLOCATOR})
 
