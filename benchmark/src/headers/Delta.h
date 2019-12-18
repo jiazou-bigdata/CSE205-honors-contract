@@ -1,8 +1,8 @@
-//The Tensor class describes an arbitrary array with a specified shape
+//The Delta class describes a set of gradients that we use for updating the model
 
 #include <unordered_map>
 
-
+//customized hash function
 struct IndexHash {
     std::size_t operator()( const std::vector<int> & index) const {
         std::size_t ret = 0;
@@ -16,6 +16,7 @@ struct IndexHash {
 
 };
 
+//customized equal function
 struct IndexEqual {
     bool operator()(const std::vector<int>& lhs, const std::vector<int>&rhs) const{
        if (lhs.size() != rhs.size()){
@@ -34,25 +35,28 @@ template<typename Type>
 class Delta {
 
 private:
-    //the data of the tensor 
+    //the gradients data is stored in a hashmap
     std::unordered_map<std::vector<int>, Type, IndexHash, IndexEqual> * data = nullptr;
 
 public:
+    //constructor
     Delta() {
         this->data = new std::unordered_map<std::vector<int>, Type, IndexHash, IndexEqual>();
     }
 
-
+    //destructor
     ~Delta() {
        delete this->data;
        this->data = nullptr;
     }
     
+    //add a new gradient 
     void update(std::vector<int> index, Type newValue) {
-       data[index] = newValue;
+       (*data)[index] = newValue;
     }
 
-    std::unordered_map<std::vector<int>, Type, IndexHash, IndexEqual> getData() {
+    //get the gradient data
+    std::unordered_map<std::vector<int>, Type, IndexHash, IndexEqual>* getData() {
         return data;
     }
 };
