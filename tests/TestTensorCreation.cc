@@ -32,51 +32,56 @@ int main(int argc, char ** argv) {
        return 1;
    }
    std::string filePath = argv[1];
-   ifstream inFile(filePath);
 
-   auto begin = std::chrono::high_resolution_clock::now();
-
-   //initialize the neuralNet
-   std::vector<std::shared_ptr<Tensor<float>>> * neuralNet = new std::vector<std::shared_ptr<Tensor<float>>>();
-
-
-   if (!inFile) {
-       std::cerr << "Error: file does not exist: " << filePath << std::endl;
-       exit(1);   
-   }   
+   int numIterations = 1000000;
+   double totalAllocationTime = 0;
+   double totalDeallocationTime = 0;
+   for (int i = 0; i < numIterations; i++) {
+       auto begin = std::chrono::high_resolution_clock::now();
+       ifstream inFile(filePath);
+       //initialize the neuralNet
+       std::vector<std::shared_ptr<Tensor<float>>> * neuralNet = new std::vector<std::shared_ptr<Tensor<float>>>();
 
 
+       if (!inFile) {
+           std::cerr << "Error: file does not exist: " << filePath << std::endl;
+           exit(1);   
+       }   
 
-   std::string line="";
-   //create the neuralNet based on specification
-   while (std::getline (inFile, line)) {
-      stringstream ss;
-      ss << line;
-      std::vector<int> dimensions;
-      int num;
-      while (!ss.eof()) {
-          ss >> num;
-	  dimensions.push_back(num);
-      }
-      std::shared_ptr<Tensor<float>> layer = std::make_shared<Tensor<float>> (dimensions);
-      neuralNet->push_back(layer);
-   }
 
-   auto creation_end = std::chrono::high_resolution_clock::now();
-   std::cout << "Allocation Duration: "
-              << std::chrono::duration_cast<std::chrono::duration<float>>(creation_end - begin).count()
-              << " secs." << std::endl;
 
-   //free the neuralNet
-   for (auto layer : *neuralNet){
-       layer = nullptr;
-   }
-   delete neuralNet;
+       std::string line="";
+       //create the neuralNet based on specification
+       while (std::getline (inFile, line)) {
+           stringstream ss;
+           ss << line;
+           std::vector<int> dimensions;
+           int num;
+           while (!ss.eof()) {
+               ss >> num;
+	       dimensions.push_back(num);
+           }
+           std::shared_ptr<Tensor<float>> layer = std::make_shared<Tensor<float>> (dimensions);
+           neuralNet->push_back(layer);
+        }
 
-   auto end = std::chrono::high_resolution_clock::now();
-   std::cout << "Deallocation Duration: "
-              << std::chrono::duration_cast<std::chrono::duration<float>>(end - creation_end).count()
-              << " secs." << std::endl;
+        auto creation_end = std::chrono::high_resolution_clock::now();
+	totalAllocationTime += std::chrono::duration_cast<std::chrono::duration<float>>(creation_end - begin).count();
+
+        //free the neuralNet
+        for (auto layer : *neuralNet){
+            layer = nullptr;
+        }
+        delete neuralNet;
+
+	inFile.close();
+
+        auto end = std::chrono::high_resolution_clock::now();
+	totalDeallocationTime += std::chrono::duration_cast<std::chrono::duration<float>>(end - creation_end).count();
+
+    }
+    std::cout << "Allocation Duration: " << totalAllocationTime << " secs." << std::endl;
+    std::cout << "Deallocation Duration: " << totalDeallocationTime << " secs." << std::endl;
 
 
 }
