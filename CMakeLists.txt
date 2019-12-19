@@ -44,3 +44,6 @@ add_executable(testCreation ${SOURCE_FILES_TEST_CREATION})
 
 set(SOURCE_FILES_TEST_GRADIENTS ${PROJECT_SOURCE_DIR}/tests/TestGradientsCreation.cc $<TARGET_OBJECTS:powehi>)
 add_executable(testGradients ${SOURCE_FILES_TEST_GRADIENTS})
+
+set(SOURCE_FILES_TEST_OPT_GRADIENTS ${PROJECT_SOURCE_DIR}/tests/TestOptimizedGradientsCreation.cc $<TARGET_OBJECTS:powehi>)
+add_executable(testOptGradients ${SOURCE_FILES_TEST_OPT_GRADIENTS})

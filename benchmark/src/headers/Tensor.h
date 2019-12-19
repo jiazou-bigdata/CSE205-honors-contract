@@ -77,7 +77,7 @@ public:
     }
 
     //merge delta to this tensor
-    void merge(std::unordered_map<std::vector<int>, T, IndexHash, IndexEqual>
+    void merge(std::unordered_map<std::vector<int>, T>
 		    delta) {
         for (std::pair<std::vector<int>, T> pair : delta) {
 	     update(pair.first, pair.second);

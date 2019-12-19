@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <math.h>
-#include <unordered_map>
+#include <vector>
 #include "STLSlabAllocator.h"
 #include "STLTlsfAllocator.h"
 #include <cstdlib>
@@ -18,7 +18,7 @@
 #include <fstream>
 #include <sstream>
 #include <memory>
-#include "Tensor.h"
+#include "OptimizedDelta.h"
 
 using namespace std;
 
@@ -46,7 +46,7 @@ int main(int argc, char ** argv) {
        //opening configuration file
        ifstream inFile(filePath);
        //initialize the gradients for the whole network
-       std::vector<std::shared_ptr<Delta<float>>> * all_gradients = new std::vector<std::shared_ptr<Delta<float>>>();
+       std::vector<std::shared_ptr<OptimizedDelta<float>>> * all_gradients = new std::vector<std::shared_ptr<OptimizedDelta<float>>>();
 
 
        if (!inFile) {
@@ -67,7 +67,7 @@ int main(int argc, char ** argv) {
                ss >> num;
 	       dimensions.push_back(num);
            }
-           std::shared_ptr<Delta<float>> gradients = std::make_shared<Delta<float>> ();
+           std::shared_ptr<OptimizedDelta<float>> gradients = std::make_shared<OptimizedDelta<float>> ();
 	   int numDimensions = dimensions.size();
 	   int totalNumPossibleIndexes = 1;
 	   for (int curDimension : dimensions) {
@@ -76,7 +76,7 @@ int main(int argc, char ** argv) {
 	   std::cout << "totalNumParameters at this layer: " << totalNumPossibleIndexes << std::endl;
 	   int totalNumActivated = totalNumPossibleIndexes*activation_rate;
 	   for (int indexOrder = 0; indexOrder < totalNumActivated; indexOrder++) {
-                    gradients->update(indexOrder,0.01);
+                    gradients->add(indexOrder,0.01);
 	   }
 	   all_gradients->push_back(gradients);
         }
