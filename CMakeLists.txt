@@ -41,3 +41,6 @@ add_executable(testAllocator ${SOURCE_FILES_TEST_ALLOCATOR})
 
 set(SOURCE_FILES_TEST_CREATION ${PROJECT_SOURCE_DIR}/tests/TestTensorCreation.cc $<TARGET_OBJECTS:powehi>)
 add_executable(testCreation ${SOURCE_FILES_TEST_CREATION})
+
+set(SOURCE_FILES_TEST_GRADIENTS ${PROJECT_SOURCE_DIR}/tests/TestGradientsCreation.cc $<TARGET_OBJECTS:powehi>)
+add_executable(testGradients ${SOURCE_FILES_TEST_GRADIENTS})

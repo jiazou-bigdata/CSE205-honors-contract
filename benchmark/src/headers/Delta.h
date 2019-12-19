@@ -46,6 +46,7 @@ public:
 
     //destructor
     ~Delta() {
+       this->data->clear();
        delete this->data;
        this->data = nullptr;
     }
