@@ -21,7 +21,7 @@ public:
 
     Tensor(std::vector<int> &dimensions) {
       this->shape = std::make_shared<TensorShape>(dimensions);
-      this->data = new std::vector<T>(dimensions.size());
+      this->data = new std::vector<T>(shape->getLength());
     }
 
     //constructor
@@ -47,12 +47,30 @@ public:
        this->data = nullptr;
     }
 
+    void setShape(std::vector<int> &dimensions) {
+       this->shape = std::make_shared<TensorShape>(dimensions);
+    }
+
+    void setData(std::vector<T> *data) {
+       this->data = data;
+    }
+
+    std::shared_ptr<TensorShape> * getShape() {
+       return this->shape;
+    }
+
+    std::vector<T> * getData() {
+       return this->data;
+    }
+
     //get position in the array, given an index
     int getPos(std::vector<int> index) {
 	int ret = 0;
 	int numDimensions = shape->getNumDimensions();
+	int factor = shape->getLength()/shape->getDimension(0);
         for(int i = 0; i < numDimensions; i++) {
-	    ret += shape->getDimension(i+1)*index[i];
+	    ret += factor*index[i];
+	    factor = factor/shape->getDimension(i+1);
 	}
 	return ret;
     }
@@ -63,10 +81,35 @@ public:
 	(*data)[pos] = newValue;
     }
 
+    //update the value at the given position
+    void update(int pos, T newValue) {
+        (*data)[pos] = newValue;
+    }
+
+    std::vector<int> getIndex(int pos) {
+        std::vector<int> ret;
+	int numDimensions = shape->getNumDimensions();
+	int factor = shape->getLength()/shape->getDimension(0);
+	int curPos = pos;
+	for (int i = 0; i < numDimensions; i++) {
+	    int curIndex = curPos/factor;
+	    ret.push_back(curIndex);
+	    curPos = curPos - curIndex*factor;
+	    factor = factor/shape->getDimension(i+1);
+	}
+        return ret;
+    }
+
+
     //return the value at the given index
     T get(std::vector<int> index) {
         int pos = getPos(index);
 	return (*data)[pos];
+    }
+
+    //return the value at the given position
+    T get(int pos) {
+        return (*data)[pos];
     }
 
     //assign a new data vector
@@ -74,6 +117,26 @@ public:
 	if (this->data != nullptr) 
              delete this->data;
         this->data = myData;
+    }
+
+    
+
+
+    //get a subtensor at the k-th row of the tensor
+    Tensor<T> getSubTensorByRow(int k) {
+          Tensor<T> subTensor;
+	  std::vector<int> subDimensions;
+	  int numDimensions = shape->getNumDimensions();
+	  for (int i = 1; i < numDimensions; i++) {
+	      subDimensions.push_back(shape->getDimension(1));
+	  }
+	  subTensor.setShape(subDimensions);
+	  std::vector<T> * subData = new std::vector<T>();
+	  int factor = shape->getLength()/shape->getDimension(0);
+	  for (int i = 0; i < factor; i++) {
+	      subData->push_back((*data)[i]);
+	  }
+	  subTensor.setData(subData);
     }
 
     //merge delta to this tensor

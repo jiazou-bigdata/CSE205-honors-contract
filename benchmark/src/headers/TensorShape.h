@@ -37,4 +37,15 @@ class TensorShape {
            return dimension.size();
        }
 
+      //set dimensions
+      void setDimension(std::vector<int> dimension) {
+          this->dimension = dimension;
+      }
+
+      //get dimensions
+      std::vector<int> & getDimensions() {
+          return this->dimension;
+      }
+
+
 };
