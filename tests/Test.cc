@@ -18,6 +18,7 @@
 #include <fstream>
 #include <sstream>
 #include <memory>
+#include "Tensor.h"
 #include "OptimizedDelta.h"
 
 using namespace std;
@@ -41,18 +42,18 @@ int main(int argc, char ** argv) {
    double totalDeallocationTime = 0;
    for (int i = 0; i < numIterations; i++) {
        auto begin = std::chrono::high_resolution_clock::now();
-       //opening configuration file
+
        ifstream inFile(filePath);
-       //initialize the gradients for the whole network
-       std::vector<std::shared_ptr<OptimizedDelta<float>>> * all_gradients = new std::vector<std::shared_ptr<OptimizedDelta<float>>>();
+       //initialize the neuralNet
+       std::vector<std::shared_ptr<Tensor<float>>> * neuralNet = new std::vector<std::shared_ptr<Tensor<float>>>();
 
 
        if (!inFile) {
            std::cerr << "Error: file does not exist: " << filePath << std::endl;
-           exit(1);   
-       }   
+           exit(1);
+       }
 
-
+       std::vector<std::vector<int>> all_dimensions;
 
        std::string line="";
        //create the neuralNet based on specification
@@ -63,8 +64,17 @@ int main(int argc, char ** argv) {
            int num;
            while (!ss.eof()) {
                ss >> num;
-	       dimensions.push_back(num);
+               dimensions.push_back(num);
            }
+	   all_dimensions.push_back(dimensions);
+           std::shared_ptr<Tensor<float>> layer = std::make_shared<Tensor<float>> (dimensions);
+           neuralNet->push_back(layer);
+        }
+
+       //initialize the gradients for the whole network
+       std::vector<std::shared_ptr<OptimizedDelta<float>>> * all_gradients = new std::vector<std::shared_ptr<OptimizedDelta<float>>>();
+
+       for (std::vector<int> dimensions : all_dimensions) {
            std::shared_ptr<OptimizedDelta<float>> gradients = std::make_shared<OptimizedDelta<float>> ();
 	   int numDimensions = dimensions.size();
 	   int totalNumPossibleIndexes = 1;
@@ -81,6 +91,13 @@ int main(int argc, char ** argv) {
 
         auto creation_end = std::chrono::high_resolution_clock::now();
 	totalAllocationTime += std::chrono::duration_cast<std::chrono::duration<float>>(creation_end - begin).count();
+
+        //free the neuralNet
+        for (auto layer : *neuralNet){
+            layer = nullptr;
+        }
+        delete neuralNet;
+
 
         //free the gradients
         for (auto cur_gradients : *all_gradients){
