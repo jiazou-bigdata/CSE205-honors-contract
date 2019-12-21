@@ -50,3 +50,6 @@ add_executable(testOptGradients ${SOURCE_FILES_TEST_OPT_GRADIENTS})
 
 set(SOURCE_FILES_TEST_INTEGRATED ${PROJECT_SOURCE_DIR}/tests/Test.cc $<TARGET_OBJECTS:powehi>)
 add_executable(testIntegrated ${SOURCE_FILES_TEST_INTEGRATED})
+
+set(SOURCE_FILES_TEST_SPARSE ${PROJECT_SOURCE_DIR}/tests/TestSparseTensorCreation.cc $<TARGET_OBJECTS:powehi>)
+add_executable(testSparse ${SOURCE_FILES_TEST_SPARSE})

@@ -1,5 +1,5 @@
 //The Tensor class describes an arbitrary array with a specified shape
-
+#pragma once
 #include "TensorShape.h" 
 #include "Delta.h"
 #include <vector>
@@ -15,6 +15,9 @@ private:
     std::vector<T> * data = nullptr;
 
 public:
+
+    //default constructor
+    Tensor() {}
 
     //constructor
     //@param dimensions dimensions of the tensor
@@ -55,7 +58,7 @@ public:
        this->data = data;
     }
 
-    std::shared_ptr<TensorShape> * getShape() {
+    std::shared_ptr<TensorShape> getShape() {
        return this->shape;
     }
 
@@ -119,7 +122,18 @@ public:
         this->data = myData;
     }
 
-    
+   void randomFill(double rate) {
+      if (data == nullptr)
+	  return;
+      srand(time(NULL));
+      for (int i = 0; i < shape->getLength(); i++) {
+          double val = (double)(rand())/(double)(RAND_MAX);
+	  if (val < rate)
+	     (*data)[i] = val;
+	  else
+             (*data)[i] = 0.0;
+      }
+   } 
 
 
     //get a subtensor at the k-th row of the tensor

@@ -1,5 +1,5 @@
 //The Delta class describes a set of gradients that we use for updating the model
-
+#pragma once
 #include <unordered_map>
 
 

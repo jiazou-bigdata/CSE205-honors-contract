@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 
 
@@ -9,6 +10,8 @@ class TensorShape {
        std::vector<int> dimension;
 
     public:
+       TensorShape() {}
+
        TensorShape(std::vector<int> dimension){
            this->dimension = dimension;
        }
@@ -43,7 +46,7 @@ class TensorShape {
       }
 
       //get dimensions
-      std::vector<int> & getDimensions() {
+      std::vector<int>  getDimensions() {
           return this->dimension;
       }
 
