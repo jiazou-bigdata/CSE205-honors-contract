@@ -76,7 +76,7 @@ public:
        int numElements = denseTensor->getShape()->getLength();
        for (int i = 0; i < numElements; i++) {
            int curValue = denseTensor->get(i);
-	   if ((curValue > 0.000001) || (curValue < 0.000001)){
+	   if ((curValue > 0.000001) || (curValue < -0.000001)){
 	       myData->push_back(curValue);
 	       std::vector<int> curIndexOfValue = denseTensor->getIndex(i);
 	       for (int j = 0; j < curIndexOfValue.size(); j++) {
